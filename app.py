@@ -8,12 +8,12 @@ PORT = 8000
 import models
 
 #importing resource
-from resources.user import user ############ added this line
+from resources.user import user 
+from resources.log import log 
 
 login_manager = LoginManager() # sets up the ability to set up the session
 
 app = Flask(__name__)
-
 ###################### added these lines
 
 app.secret_key = "ALFJKSALFKSAKLJASLAKF" ## Need this to encode the session
@@ -40,11 +40,11 @@ def after_request(response):
     g.db.close()
     return response
 
-################## added these lines
 CORS(user, origins=['http://localhost:3000'], supports_credentials=True)
 app.register_blueprint(user, url_prefix='/user')
-################## added these lines
 
+CORS(log, origins=['http://localhost:3000'], supports_credentials=True)
+app.register_blueprint(log, url_prefix='/logs')
 
 if __name__ == '__main__':
     print('tables connected')

@@ -11,8 +11,15 @@ class User(UserMixin, Model):
     class Meta:
         database = DATABASE
 
+class UserActivityLog(Model):
+    username = CharField()
+    activity = CharField()
+    created_at = DateTimeField(default=datetime.datetime.now)
+    class Meta:
+        database = DATABASE
+
 def initialize():
     DATABASE.connect()
-    DATABASE.create_tables([User], safe=True)
+    DATABASE.create_tables([User, UserActivityLog], safe=True)
     print("TABLES Created")
     DATABASE.close()

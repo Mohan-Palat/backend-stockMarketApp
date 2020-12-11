@@ -10,6 +10,7 @@ from playhouse.shortcuts import model_to_dict
 # second argument is it's import_name
 user = Blueprint('users', 'user')
 
+
 @user.route('/', methods=["GET"])
 def get_all_users():
     try:
@@ -26,7 +27,6 @@ def register():
     ## This is how you get the image you sent over
     ## This has all the data like username, email, password
     payload = request.get_json()
-
     payload['email'].lower()
     try:
         # Find if the user already exists?
@@ -35,6 +35,7 @@ def register():
     except models.DoesNotExist:
         payload['password'] = generate_password_hash(payload['password']) # bcrypt line for generating the hash
         user = models.User.create(**payload) # put the user in the database
+        activity = models.UserActivityLog.create(username=payload['username'], activity="has been created")
         # **payload, is spreading like js (...) the properties of the payload object out
 
         #login_user
@@ -53,12 +54,13 @@ def login():
     payload = request.get_json()
     print(payload, '< --- this is playload')
     try:
-        user = models.User.get(models.User.email== payload['email']) ### Try find the user by thier email
+        user = models.User.get(models.User.username== payload['username']) ### Try find the user by thier email
         user_dict = model_to_dict(user) # if you find the User model convert in to a dictionary so you can access it
         if(check_password_hash(user_dict['password'], payload['password'])): # use bcyrpts check password to see if passwords match
             del user_dict['password'] # delete the password
             login_user(user) # setup the session
             print(user, ' this is user')
+            activity = models.UserActivityLog.create(username=payload['username'], activity="has logged in")
             return jsonify(data=user_dict, status={"code": 200, "message": "Success"}) # respond to the client
         else:
             return jsonify(data={}, status={"code": 401, "message": "Username or Password is incorrect"})
@@ -69,5 +71,8 @@ def login():
 @user.route("/logout")
 @login_required
 def logout():
+    username = current_user.username
+    print(username)
     logout_user()
+    activity = models.UserActivityLog.create(username=username, activity="has logged out")
     return 'you are logged out'
