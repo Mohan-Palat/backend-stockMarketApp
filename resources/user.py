@@ -35,7 +35,7 @@ def register():
     except models.DoesNotExist:
         payload['password'] = generate_password_hash(payload['password']) # bcrypt line for generating the hash
         user = models.User.create(**payload) # put the user in the database
-        activity = models.UserActivityLog.create(username=payload['username'], activity="has been created")
+        activity = models.UserActivityLog.create(username=payload['username'], activity="A new user has been created")
         # **payload, is spreading like js (...) the properties of the payload object out
 
         #login_user

@@ -45,6 +45,8 @@ app.register_blueprint(user, url_prefix='/user')
 
 CORS(log, origins=['http://localhost:3000'], supports_credentials=True)
 app.register_blueprint(log, url_prefix='/logs')
+app.config['CORS_HEADERS'] = 'Content-Type'
+
 
 if __name__ == '__main__':
     print('tables connected')

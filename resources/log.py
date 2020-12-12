@@ -12,10 +12,13 @@ from playhouse.shortcuts import model_to_dict
 log = Blueprint('logs', 'log')
 
 @log.route('/', methods=["GET"])
-@cross_origin(origin='localhost')
+@cross_origin()
 def get_all_logs():
     try:
-        logs = [model_to_dict(log) for log in models.UserActivityLog.select()]
+        logs = [model_to_dict(log) for log in models.UserActivityLog
+                                                .select()
+                                                .order_by(models.UserActivityLog.created_at.desc())
+                                                .limit(9)]
         print(logs)
         return jsonify(data=logs, status={"code": 200, "message": "Success"})
     except models.DoesNotExist:
