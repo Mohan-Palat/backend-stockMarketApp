@@ -1,6 +1,9 @@
 from flask import Flask, jsonify, g
 from flask_cors import CORS
 from flask_login import LoginManager 
+from flask_httpauth import HTTPBasicAuth
+import jwt
+from werkzeug.security import generate_password_hash, check_password_hash
 
 DEBUG = True
 PORT = 8000
@@ -18,6 +21,8 @@ app = Flask(__name__)
 
 app.secret_key = "ALFJKSALFKSAKLJASLAKF" ## Need this to encode the session
 login_manager.init_app(app) # set up the sessions on the app
+app.config['SECRET_KEY'] = 'the quick brown fox jumps over the lazy dog'
+auth = HTTPBasicAuth()
 
 @login_manager.user_loader # decorator function, that will load the user object whenever we access the session, we can get the user
 # by importing current_user from the flask_login
@@ -39,6 +44,12 @@ def after_request(response):
     """Close the database connection after each request"""
     g.db.close()
     return response
+
+@app.route('/api/token')
+@auth.login_required
+def get_auth_token():
+    token = g.user.generate_auth_token(600)
+    return jsonify({'token': token.decode('ascii'), 'duration': 600})
 
 CORS(user, origins=['http://localhost:3000'], supports_credentials=True)
 app.register_blueprint(user, url_prefix='/user')

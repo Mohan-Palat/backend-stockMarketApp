@@ -18,7 +18,7 @@ def get_all_logs():
         logs = [model_to_dict(log) for log in models.UserActivityLog
                                                 .select()
                                                 .order_by(models.UserActivityLog.created_at.desc())
-                                                .limit(9)]
+                                                .limit(10)]
         print(logs)
         return jsonify(data=logs, status={"code": 200, "message": "Success"})
     except models.DoesNotExist:

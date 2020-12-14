@@ -61,6 +61,7 @@ def login():
             login_user(user) # setup the session
             print(user, ' this is user')
             activity = models.UserActivityLog.create(username=payload['username'], activity="has logged in")
+            print(current_user.is_authenticated)
             return jsonify(data=user_dict, status={"code": 200, "message": "Success"}) # respond to the client
         else:
             return jsonify(data={}, status={"code": 401, "message": "Username or Password is incorrect"})
@@ -68,11 +69,11 @@ def login():
         return jsonify(data={}, status={"code": 401, "message": "Username or Password is incorrect"})
 
 
-@user.route("/logout")
+@user.route("/logout", methods=["POST"])
 @login_required
 def logout():
     username = current_user.username
     print(username)
     logout_user()
     activity = models.UserActivityLog.create(username=username, activity="has logged out")
-    return 'you are logged out'
+    return 'you have been logged out'

@@ -12,6 +12,7 @@ filelock==3.0.12
 Flask==1.1.2
 Flask-Bcrypt==0.7.1
 Flask-Cors==3.0.9
+Flask-HTTPAuth==4.2.0
 Flask-Login==0.5.0
 ipython==7.19.0
 ipython-genutils==0.2.0
@@ -19,6 +20,7 @@ isort==5.6.4
 itsdangerous==1.1.0
 jedi==0.17.2
 Jinja2==2.11.2
+jwt==1.1.0
 lazy-object-proxy==1.4.3
 MarkupSafe==1.1.1
 mccabe==0.6.1
