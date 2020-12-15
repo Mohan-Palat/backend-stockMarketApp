@@ -1,6 +1,9 @@
+from flask import current_app as app
 import datetime
 from peewee import *
 from flask_login import UserMixin
+import time
+import datetime
 import jwt
 from werkzeug.security import generate_password_hash, check_password_hash
 # Connect to a Postgres database.
@@ -40,8 +43,22 @@ class UserActivityLog(Model):
     class Meta:
         database = DATABASE
 
+class Watchlist(Model):
+    watchlist = ForeignKeyField(User, backref='watchlists')
+    watchlistname = CharField()
+    created_at = DateTimeField(default=datetime.datetime.now)
+    class Meta:
+        database = DATABASE
+
+class Stock(Model):
+    user = ForeignKeyField(User, backref='stocks')
+    watchlist = ForeignKeyField(Watchlist, backref='stocks')
+    stock = CharField()
+    class Meta:
+        database = DATABASE
+
 def initialize():
     DATABASE.connect()
-    DATABASE.create_tables([User, UserActivityLog], safe=True)
+    DATABASE.create_tables([User, UserActivityLog, Watchlist, Stock], safe=True)
     print("TABLES Created")
     DATABASE.close()

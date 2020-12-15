@@ -1,15 +1,16 @@
 import models
-
+from flask_cors import CORS
 from flask import request, jsonify, Blueprint
 from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_login import login_user, current_user, logout_user, login_required
+from flask_httpauth import HTTPTokenAuth
 from playhouse.shortcuts import model_to_dict
 
 
 # first argument is blueprints name
 # second argument is it's import_name
 user = Blueprint('users', 'user')
-
+auth = HTTPTokenAuth(scheme='Bearer')
 
 @user.route('/', methods=["GET"])
 def get_all_users():
@@ -57,23 +58,29 @@ def login():
         user = models.User.get(models.User.username== payload['username']) ### Try find the user by thier email
         user_dict = model_to_dict(user) # if you find the User model convert in to a dictionary so you can access it
         if(check_password_hash(user_dict['password'], payload['password'])): # use bcyrpts check password to see if passwords match
+            print(user.generate_auth_token())
+            token = user.generate_auth_token().decode('utf-8')
             del user_dict['password'] # delete the password
             login_user(user) # setup the session
             print(user, ' this is user')
             activity = models.UserActivityLog.create(username=payload['username'], activity="has logged in")
             print(current_user.is_authenticated)
-            return jsonify(data=user_dict, status={"code": 200, "message": "Success"}) # respond to the client
+            return jsonify(data={"user": user_dict, "token": token}, status={"code": 200, "message": "Success"}) # respond to the client
         else:
             return jsonify(data={}, status={"code": 401, "message": "Username or Password is incorrect"})
     except models.DoesNotExist:
         return jsonify(data={}, status={"code": 401, "message": "Username or Password is incorrect"})
 
+@auth.verify_token
+def verify_token(token):
+    if token in tokens:
+        return tokens[token]
+
 
 @user.route("/logout", methods=["POST"])
-@login_required
 def logout():
-    username = current_user.username
-    print(username)
+    payload = request.get_json()
+    username = payload['username']
     logout_user()
     activity = models.UserActivityLog.create(username=username, activity="has logged out")
     return 'you have been logged out'
