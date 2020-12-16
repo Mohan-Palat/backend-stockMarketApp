@@ -46,7 +46,7 @@ class UserActivityLog(Model):
 
 class Watchlist(Model):
     watchlist = ForeignKeyField(User, backref='watchlists')
-    watchlistname = CharField()
+    watchlistname = CharField(unique=True)
     created_at = DateTimeField(default=datetime.datetime.now)
     class Meta:
         database = DATABASE
