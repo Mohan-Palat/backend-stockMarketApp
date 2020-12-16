@@ -17,6 +17,12 @@ def add_stock():
         payload = request.get_json()
         print(payload)
         stock = models.Stock.create(user_id=payload['user_id'], watchlist_id=payload['watchlist_id'], stock=payload['stock'])
-        # stock = model_to_dict(stock)
-        # activity = models.UserActivityLog.create(username=payload['username'], activityType="watchlist", activity="has created a new watchlist")
-        return jsonify(data='', status={"code": 201, "message": "Success"})
+        stock = model_to_dict(stock)
+        activity = models.UserActivityLog.create(username=payload['username'], activityType="watchlist", activity="has added a stock to their watchlist")
+        return jsonify(data=stock, status={"code": 201, "message": "Success"})
+
+@stock.route('/watchlist',methods=['POST'])
+def get_watchlist_stocks():
+    payload = request.get_json()
+    stocks = [model_to_dict(stock) for stock in models.Stock.select(models.Stock.stock,models.Stock.id,models.Stock.user, models.Stock.watchlist).join(models.Watchlist).where(models.Watchlist.watchlistname == payload['watchlistname'])]
+    return jsonify(data=stocks, status={"code": 201, "message": "Success"})
