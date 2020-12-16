@@ -38,6 +38,7 @@ class User(UserMixin, Model):
 
 class UserActivityLog(Model):
     username = CharField()
+    activityType = CharField()
     activity = CharField()
     created_at = DateTimeField(default=datetime.datetime.now)
     class Meta:

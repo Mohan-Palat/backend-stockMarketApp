@@ -26,20 +26,16 @@ def get_user_watchlists(id):
     try:
         print(id)
         watchlists = [model_to_dict(watchlist) for watchlist in models.Watchlist
-                                                .select().where(models.Watchlist.watchlist_id == id)]
+                                                .select().where(models.Watchlist.watchlist_id == id)
+                                                .order_by(models.Watchlist.created_at.desc())]
         return jsonify(data=watchlists, status={"code": 200, "message": "Success"})
     except models.DoesNotExist:
         return jsonify(data={}, status={"code": 401, "message": "Error getting the resources"})
 
 @watchlist.route('/create',methods=['POST'])
 def create_watchlist():
-    try:
-        payload = request.get_json()
-        print(payload)
-        watchlist = models.Watchlist.create(**payload)
-        watchlist = model_to_dict(watchlist)
-        print(watchlist)
-        # activity = models.UserActivityLog.create(username=payload['username'], activity="A new watchlist has been created")
-        return jsonify(data=watchlist, status={"code": 201, "message": "Success"})
-    except:
-        return jsonify(data={}, status={"code": 401, "message": "Invalid request"})
+    payload = request.get_json()
+    watchlist = models.Watchlist.create(watchlist_id=payload['watchlist_id'], watchlistname=payload['watchlistname'])
+    watchlist = model_to_dict(watchlist)
+    activity = models.UserActivityLog.create(username=payload['username'], activityType="watchlist", activity="has created a new watchlist")
+    return jsonify(data=watchlist, status={"code": 201, "message": "Success"})

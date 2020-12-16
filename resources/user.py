@@ -36,7 +36,7 @@ def register():
     except models.DoesNotExist:
         payload['password'] = generate_password_hash(payload['password']) # bcrypt line for generating the hash
         user = models.User.create(**payload) # put the user in the database
-        activity = models.UserActivityLog.create(username=payload['username'], activity="A new user has been created")
+        activity = models.UserActivityLog.create(username=payload['username'],activityType="user",  activity="A new user has been created")
         # **payload, is spreading like js (...) the properties of the payload object out
 
         #login_user
@@ -63,7 +63,7 @@ def login():
             del user_dict['password'] # delete the password
             login_user(user) # setup the session
             print(user, ' this is user')
-            activity = models.UserActivityLog.create(username=payload['username'], activity="has logged in")
+            activity = models.UserActivityLog.create(username=payload['username'],activityType="user", activity="has logged in")
             print(current_user.is_authenticated)
             return jsonify(data={"user": user_dict, "token": token}, status={"code": 200, "message": "Success"}) # respond to the client
         else:
@@ -82,5 +82,5 @@ def logout():
     payload = request.get_json()
     username = payload['username']
     logout_user()
-    activity = models.UserActivityLog.create(username=username, activity="has logged out")
+    activity = models.UserActivityLog.create(username=username,activityType="user", activity="has logged out")
     return 'you have been logged out'

@@ -19,7 +19,6 @@ def get_all_logs():
                                                 .select()
                                                 .order_by(models.UserActivityLog.created_at.desc())
                                                 .limit(10)]
-        print(logs)
         return jsonify(data=logs, status={"code": 200, "message": "Success"})
     except models.DoesNotExist:
         return jsonify(data={}, status={"code": 401, "message": "Error getting the resources"})
