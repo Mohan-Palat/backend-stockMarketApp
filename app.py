@@ -64,6 +64,11 @@ def get_auth_token():
 def get_resource():
     return jsonify({'data': 'Hello, %s!' %current_user.username})
 
+@app.route('/')
+@auth.login_required
+def home():
+    return 'Hello app is up'
+
 CORS(user, origins=['*','http://localhost:3000', '*'], supports_credentials=True)
 app.register_blueprint(user, url_prefix='/user')
 
