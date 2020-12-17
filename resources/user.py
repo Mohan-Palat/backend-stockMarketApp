@@ -38,17 +38,17 @@ def register():
         user = models.User.create(**payload) # put the user in the database
         activity = models.UserActivityLog.create(username=payload['username'],activityType="user",  activity="A new user has been created")
         # **payload, is spreading like js (...) the properties of the payload object out
-
+        token = user.generate_auth_token().decode('utf-8')
         #login_user
         login_user(user) # starts session
-
+        activity = models.UserActivityLog.create(username=payload['username'],activityType="user", activity="has logged in")
         user_dict = model_to_dict(user)
         print(user_dict)
         print(type(user_dict))
         # delete the password
         del user_dict['password'] # delete the password before we return it, because we don't need the client to be aware of it
 
-        return jsonify(data=user_dict, status={"code": 201, "message": "Success"})
+        return jsonify(data={"user": user_dict, "token": token}, status={"code": 201, "message": "Success"})
 
 @user.route('/login', methods=["POST"])
 def login():
