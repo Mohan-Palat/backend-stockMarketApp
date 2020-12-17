@@ -24,5 +24,7 @@ def add_stock():
 @stock.route('/watchlist',methods=['POST'])
 def get_watchlist_stocks():
     payload = request.get_json()
+    print(payload)
     stocks = [model_to_dict(stock) for stock in models.Stock.select(models.Stock.stock,models.Stock.id,models.Stock.user, models.Stock.watchlist).join(models.Watchlist).where(models.Watchlist.watchlistname == payload['watchlistname'])]
+    print(stocks)
     return jsonify(data=stocks, status={"code": 201, "message": "Success"})

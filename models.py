@@ -1,4 +1,5 @@
 from flask import current_app as app
+import datetime, os, urllib.parse
 import datetime
 from peewee import *
 from flask_login import UserMixin
@@ -7,7 +8,14 @@ import datetime
 import jwt
 from werkzeug.security import generate_password_hash, check_password_hash
 # Connect to a Postgres database.
-DATABASE = PostgresqlDatabase('stock_app', host='localhost', port=5432)
+# DATABASE = PostgresqlDatabase('stock_app', host='localhost', port=5432)
+
+if "DATABASE_URL" in os.environ:
+    urllib.parse.uses_netloc.append('postgres')
+    url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
+    DATABASE = PostgresqlDatabase(database=url.path[1:], user=url.username, password=url.password, host=url.hostname, port=url.port)
+else:
+    DATABASE = os.environ.get('DATABASE_URL') or PostgresqlDatabase('stock_app', host='localhost', port=5432)
 
 class User(UserMixin, Model):
     username = CharField(unique=True)
