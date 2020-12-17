@@ -8,7 +8,7 @@ import datetime
 import jwt
 from werkzeug.security import generate_password_hash, check_password_hash
 # Connect to a Postgres database.
-# DATABASE = PostgresqlDatabase('stock_app', host='localhost', port=5432)
+DATABASE = PostgresqlDatabase('stock_app', host='localhost', port=5432)
 
 if "DATABASE_URL" in os.environ:
     urllib.parse.uses_netloc.append('postgres')
